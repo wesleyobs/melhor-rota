@@ -13,9 +13,14 @@ import (
 
 var csvPath = "../resources/" + os.Getenv("ENVIRONMENT_APP") + "/destinos.csv"
 
-func TestObterMelhorRota(t *testing.T) {
+func TestMain(m *testing.M) {
 	inserirItinerarioArquivo()
+	retCode := m.Run()
+	os.Exit(retCode)
+	os.Truncate(csvPath, 0)
+}
 
+func TestObterMelhorRota(t *testing.T) {
 	requestBuscarMelhorRota, _ := http.NewRequest("GET", "localhost:8001/rota/melhor-rota?origem=A&destino=D", nil)
 
 	recorderBuscarMelhorRota := httptest.NewRecorder()
@@ -40,8 +45,6 @@ func TestObterMelhorRota(t *testing.T) {
 	if !strings.EqualFold(resultadoObtido, rotaEsperada) {
 		t.Fatalf("Resultado esperado: %v - Resultado obtido: %v ", rotaEsperada, resultadoObtido)
 	}
-
-	os.Truncate(csvPath, 0)
 }
 
 func inserirItinerarioArquivo() {
